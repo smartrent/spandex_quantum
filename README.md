@@ -24,31 +24,26 @@ config :spandex_quantum,
   tracer: MyApp.Tracer
 ```
 
-Add the Telemetry plug to your Quantum Scheduler:
-
-```elixir
-defmodule MyApp.Scheduler do
-  use Quantum,
-    otp_app: :my_app
-end
-```
-
 Attached the telemetry handler to your `application.ex`:
 
 ```elixir
-:telemetry.attach_many(
-  "spandex-quantum-tracer",
-  [
-    [:quantum, :job, :add],
-    [:quantum, :job, :delete],
-    [:quantum, :job, :update],
-    [:quantum, :job, :start],
-    [:quantum, :job, :stop],
-    [:quantum, :job, :exception]
-  ],
-  &SpandexQuantum.handle_event/4,
-  nil
-)
+import SpandexQuantum
+
+def start(_type, _args) do
+  :telemetry.attach_many(
+    "spandex-quantum-tracer",
+    [
+      [:quantum, :job, :add],
+      [:quantum, :job, :delete],
+      [:quantum, :job, :update],
+      [:quantum, :job, :start],
+      [:quantum, :job, :stop],
+      [:quantum, :job, :exception]
+    ],
+    &SpandexQuantum.handle_event/4,
+    nil
+  )
+end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)

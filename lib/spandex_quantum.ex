@@ -79,7 +79,7 @@ defmodule SpandexQuantum do
       # spans are updated with the opts passed into `finish_trace`
       tracer().finish_trace(
         error: [error?: true],
-        type: :background_job,
+        type: :background_job_run,
         completion_time: now(),
         service: service(),
         tags: [
