@@ -10,10 +10,11 @@ defmodule SpandexQuantum do
         _config
       ) do
     if !tracer().current_trace_id([]) do
-      tracer().start_trace("#{Atom.to_string(job.name)}", [])
+      tracer().start_trace(:background_job_run, [])
 
       tracer().update_span(
-        type: :background_job_run,
+        resource: "#{Atom.to_string(job.name)}",
+        type: :background_job,
         service: service(),
         start: now(),
         tags: [
@@ -40,6 +41,7 @@ defmodule SpandexQuantum do
       ) do
     if tracer().current_trace_id([]) do
       tracer().finish_trace(
+        resource: "#{Atom.to_string(job.name)}",
         service: service(),
         completion_time: now(),
         tags: [
@@ -78,8 +80,8 @@ defmodule SpandexQuantum do
 
       # spans are updated with the opts passed into `finish_trace`
       tracer().finish_trace(
+        resource: "#{Atom.to_string(job.name)}",
         error: [error?: true],
-        type: :background_job_run,
         completion_time: now(),
         service: service(),
         tags: [
@@ -104,10 +106,11 @@ defmodule SpandexQuantum do
         %{job: job, scheduler: _scheduler} = _metadata,
         _config
       ) do
-    tracer().start_trace("#{Atom.to_string(job.name)}", [])
+    tracer().start_trace(:background_job_add, [])
 
     tracer().finish_trace(
-      type: :background_job_add,
+      resource: "#{Atom.to_string(job.name)}",
+      type: :background_job,
       service: service(),
       tags: [
         job_status: "Added"
@@ -121,10 +124,11 @@ defmodule SpandexQuantum do
         %{job: job, scheduler: _scheduler} = _metadata,
         _config
       ) do
-    tracer().start_trace("#{Atom.to_string(job.name)}", [])
+    tracer().start_trace(:background_job_delete, [])
 
     tracer().finish_trace(
-      type: :background_job_delete,
+      resource: "#{Atom.to_string(job.name)}",
+      type: :background_job,
       service: service(),
       tags: [
         job_status: "Deleted"
@@ -138,10 +142,11 @@ defmodule SpandexQuantum do
         %{job: job, scheduler: _scheduler} = _metadata,
         _config
       ) do
-    tracer().start_trace("#{Atom.to_string(job.name)}", [])
+    tracer().start_trace(:background_job_update, [])
 
     tracer().finish_trace(
-      type: :background_job_update,
+      resource: "#{Atom.to_string(job.name)}",
+      type: :background_job,
       service: service(),
       tags: [
         job_status: "Updated"
