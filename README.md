@@ -21,14 +21,13 @@ Configure spandex_quantum to use your App's `Spandex.Tracer` module in config.ex
 
 ```elixir
 config :spandex_quantum,
+  service: :my_app_quantum,
   tracer: MyApp.Tracer
 ```
 
 Attached the telemetry handler to your `application.ex`:
 
 ```elixir
-import SpandexQuantum
-
 def start(_type, _args) do
   :telemetry.attach_many(
     "spandex-quantum-tracer",
