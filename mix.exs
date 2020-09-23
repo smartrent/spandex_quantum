@@ -1,16 +1,6 @@
 defmodule SpandexQuantum.MixProject do
   use Mix.Project
 
-  defp package() do
-    [
-      name: "spandex_quantum",
-      # These are the default files included in the package
-      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
-                license* CHANGELOG* changelog* src),
-      links: %{"GitHub" => "https://github.com/smartrent/spandex_quantum"}
-    ]
-  end
-
   def project do
     [
       app: :spandex_quantum,
@@ -19,12 +9,14 @@ defmodule SpandexQuantum.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      package: package(),
       dialyzer: [
         plt_add_deps: :app_tree,
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
         plt_add_apps: [:ex_unit, :mix],
         ignore_warnings: "dialyzer.ignore_warnings"
-      ]
+      ],
+      description: "Handles the passing of Telemetry calls from Quantum to Spandex"
     ]
   end
 
@@ -46,7 +38,18 @@ defmodule SpandexQuantum.MixProject do
     [
       {:dialyxir, "~> 1.0.0", only: [:test, :dev], runtime: false},
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:spandex, "~> 3.0.2"}
+      {:spandex, "~> 3.0.2"},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+    ]
+  end
+
+  defp package() do
+    [
+      name: "spandex_quantum",
+      maintainers: ["Marc Smith"],
+      files: ["lib", "mix.exs", "README*"],
+      licenses: ["Apache-2.0"],
+      links: %{"GitHub" => "https://github.com/smartrent/spandex_quantum"}
     ]
   end
 end
