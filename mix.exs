@@ -1,6 +1,16 @@
 defmodule SpandexQuantum.MixProject do
   use Mix.Project
 
+  defp package() do
+    [
+      name: "spandex_quantum",
+      # These are the default files included in the package
+      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
+                license* CHANGELOG* changelog* src),
+      links: %{"GitHub" => "https://github.com/smartrent/spandex_quantum"}
+    ]
+  end
+
   def project do
     [
       app: :spandex_quantum,
