@@ -10,7 +10,7 @@ defmodule SpandexQuantum do
         _config
       ) do
     if !tracer().current_trace_id([]) do
-      tracer().start_trace(:background_job_run, [])
+      tracer().start_trace("background_job_run", [])
 
       tracer().update_span(
         resource: "#{Atom.to_string(job.name)}",
@@ -41,7 +41,6 @@ defmodule SpandexQuantum do
       ) do
     if tracer().current_trace_id([]) do
       tracer().finish_trace(
-        resource: "#{Atom.to_string(job.name)}",
         service: service(),
         completion_time: now(),
         tags: [
@@ -80,8 +79,8 @@ defmodule SpandexQuantum do
 
       # spans are updated with the opts passed into `finish_trace`
       tracer().finish_trace(
-        resource: "#{Atom.to_string(job.name)}",
         error: [error?: true],
+        type: :background_job,
         completion_time: now(),
         service: service(),
         tags: [
@@ -106,7 +105,7 @@ defmodule SpandexQuantum do
         %{job: job, scheduler: _scheduler} = _metadata,
         _config
       ) do
-    tracer().start_trace(:background_job_add, [])
+    tracer().start_trace("background_job_add", [])
 
     tracer().finish_trace(
       resource: "#{Atom.to_string(job.name)}",
@@ -124,7 +123,7 @@ defmodule SpandexQuantum do
         %{job: job, scheduler: _scheduler} = _metadata,
         _config
       ) do
-    tracer().start_trace(:background_job_delete, [])
+    tracer().start_trace("background_job_delete", [])
 
     tracer().finish_trace(
       resource: "#{Atom.to_string(job.name)}",
@@ -142,7 +141,7 @@ defmodule SpandexQuantum do
         %{job: job, scheduler: _scheduler} = _metadata,
         _config
       ) do
-    tracer().start_trace(:background_job_update, [])
+    tracer().start_trace("background_job_update", [])
 
     tracer().finish_trace(
       resource: "#{Atom.to_string(job.name)}",

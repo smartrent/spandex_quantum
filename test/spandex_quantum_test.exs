@@ -5,20 +5,20 @@ defmodule SpandexQuantumTest do
   test "start call" do
     Application.put_env(:spandex_quantum, :tracer, SpandexQuantum.MockNewTracer)
 
-    result =
-      SpandexQuantum.handle_event(
-        [:quantum, :job, :start],
-        %{system_time: ~D[2000-01-01]},
-        %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
-        %{}
-      )
+    SpandexQuantum.handle_event(
+      [:quantum, :job, :start],
+      %{system_time: ~D[2000-01-01]},
+      %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
+      %{}
+    )
 
-    assert_receive %{func: :start_trace, name: "ma_job"}
+    assert_receive %{func: :start_trace, name: "background_job_run", opts: []}
 
     assert_receive %{
       func: :update_span,
       opts: [
-        type: :background_job_run,
+        resource: "ma_job",
+        type: :background_job,
         service: :quantum,
         start: _now,
         tags: [
@@ -42,13 +42,12 @@ defmodule SpandexQuantumTest do
   test "stop call" do
     Application.put_env(:spandex_quantum, :tracer, SpandexQuantum.MockExistingTracer)
 
-    result =
-      SpandexQuantum.handle_event(
-        [:quantum, :job, :stop],
-        %{duration: 5},
-        %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
-        %{}
-      )
+    SpandexQuantum.handle_event(
+      [:quantum, :job, :stop],
+      %{duration: 5},
+      %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
+      %{}
+    )
 
     assert_receive %{
       func: :finish_trace,
@@ -83,19 +82,18 @@ defmodule SpandexQuantumTest do
       {:proc_lib, :init_p_do_apply, 3, [file: 'proc_lib.erl', line: 249]}
     ]
 
-    result =
-      SpandexQuantum.handle_event(
-        [:quantum, :job, :exception],
-        %{duration: 5},
-        %{
-          job: %{name: :ma_job},
-          node: :fake_testing_node,
-          scheduler: :fake_scheduler,
-          reason: "Fake Error",
-          stacktrace: stacktrace
-        },
-        %{}
-      )
+    SpandexQuantum.handle_event(
+      [:quantum, :job, :exception],
+      %{duration: 5},
+      %{
+        job: %{name: :ma_job},
+        node: :fake_testing_node,
+        scheduler: :fake_scheduler,
+        reason: "Fake Error",
+        stacktrace: stacktrace
+      },
+      %{}
+    )
 
     assert_receive %{
       error: %RuntimeError{message: "\"Fake Error\""},
@@ -137,19 +135,23 @@ defmodule SpandexQuantumTest do
   test "added job" do
     Application.put_env(:spandex_quantum, :tracer, SpandexQuantum.MockNewTracer)
 
-    result =
-      SpandexQuantum.handle_event(
-        [:quantum, :job, :add],
-        %{},
-        %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
-        %{}
-      )
+    SpandexQuantum.handle_event(
+      [:quantum, :job, :add],
+      %{},
+      %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
+      %{}
+    )
 
-    assert_receive %{func: :start_trace, name: "ma_job", opts: []}
+    assert_receive %{func: :start_trace, name: "background_job_add", opts: []}
 
     assert_receive %{
       func: :finish_trace,
-      opts: [type: :background_job_add, service: :quantum, tags: [job_status: "Added"]]
+      opts: [
+        resource: "ma_job",
+        type: :background_job,
+        service: :quantum,
+        tags: [job_status: "Added"]
+      ]
     }
 
     assert name = 1
@@ -158,19 +160,23 @@ defmodule SpandexQuantumTest do
   test "deleted job" do
     Application.put_env(:spandex_quantum, :tracer, SpandexQuantum.MockNewTracer)
 
-    result =
-      SpandexQuantum.handle_event(
-        [:quantum, :job, :delete],
-        %{},
-        %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
-        %{}
-      )
+    SpandexQuantum.handle_event(
+      [:quantum, :job, :delete],
+      %{},
+      %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
+      %{}
+    )
 
-    assert_receive %{func: :start_trace, name: "ma_job", opts: []}
+    assert_receive %{func: :start_trace, name: "background_job_delete", opts: []}
 
     assert_receive %{
       func: :finish_trace,
-      opts: [type: :background_job_delete, service: :quantum, tags: [job_status: "Deleted"]]
+      opts: [
+        resource: "ma_job",
+        type: :background_job,
+        service: :quantum,
+        tags: [job_status: "Deleted"]
+      ]
     }
 
     assert name = 1
@@ -179,19 +185,23 @@ defmodule SpandexQuantumTest do
   test "updated job" do
     Application.put_env(:spandex_quantum, :tracer, SpandexQuantum.MockNewTracer)
 
-    result =
-      SpandexQuantum.handle_event(
-        [:quantum, :job, :update],
-        %{},
-        %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
-        %{}
-      )
+    SpandexQuantum.handle_event(
+      [:quantum, :job, :update],
+      %{},
+      %{job: %{name: :ma_job}, node: :fake_testing_node, scheduler: :fake_scheduler},
+      %{}
+    )
 
-    assert_receive %{func: :start_trace, name: "ma_job", opts: []}
+    assert_receive %{func: :start_trace, name: "background_job_update", opts: []}
 
     assert_receive %{
       func: :finish_trace,
-      opts: [type: :background_job_update, service: :quantum, tags: [job_status: "Updated"]]
+      opts: [
+        resource: "ma_job",
+        type: :background_job,
+        service: :quantum,
+        tags: [job_status: "Updated"]
+      ]
     }
 
     assert name = 1
