@@ -36,9 +36,9 @@ defmodule SpandexQuantum.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:dialyxir, "~> 1.0.0", only: [:test, :dev], runtime: false},
+      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false},
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:spandex, "~> 3.0.2"},
+      {:spandex, "~> 3.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
