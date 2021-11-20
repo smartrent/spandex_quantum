@@ -1,10 +1,12 @@
 defmodule SpandexQuantum.MixProject do
   use Mix.Project
 
+  @version "0.1.1"
+
   def project do
     [
       app: :spandex_quantum,
-      version: "0.1.0",
+      version: @version,
       elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
